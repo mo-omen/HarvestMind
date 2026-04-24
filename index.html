@@ -204,20 +204,58 @@
   .run-btn:hover { background: var(--accent); }
   .run-btn:disabled { background: var(--border); cursor: not-allowed; }
 
+  /* Mobile nav dropdown */
+  .mobile-menu-btn { display: none; }
+  .mobile-nav {
+    display: none;
+    flex-direction: column;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    z-index: 9;
+    animation: slideDown 0.2s ease;
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a {
+    padding: 14px 20px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+  .mobile-nav a:last-child { border-bottom: none; }
+  .mobile-nav a:hover { background: var(--white); color: var(--ink); }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
   @media (max-width: 600px) {
-    header { padding: 10px 14px; }
+    header { padding: 10px 14px; flex-wrap: nowrap; gap: 8px; }
     .header-nav { display: none; }
-    .logo-name { font-size: 0.95rem; }
-    .logo-tag { font-size: 0.5rem; }
+    .logo-name { font-size: 0.9rem; }
+    .logo-tag { font-size: 0.48rem; letter-spacing: 0.1em; }
     .glm-tag { display: none; }
-    .analyse-btn { font-size: 0.58rem; padding: 0 10px; letter-spacing: 0.06em; }
-    #intro-panel { padding: 18px 14px 12px; }
-    .intro-headline { font-size: 1.8rem; margin-bottom: 6px; }
-    .intro-sub { font-size: 0.58rem; margin-bottom: 14px; }
-    .chip { font-size: 0.58rem; padding: 6px 11px; }
-    #chat-area { padding: 12px 12px 6px; }
-    #input-area { padding: 8px 12px 12px; }
+    .mobile-menu-btn { display: flex; }
+    .header-right { gap: 7px; flex-shrink: 0; }
+    .analyse-btn { font-size: 0.55rem; padding: 0 10px; height: 28px; letter-spacing: 0.05em; gap: 4px; }
+    .analyse-btn svg { width: 10px; height: 10px; }
+    .icon-btn { width: 28px; height: 28px; flex-shrink: 0; }
+    #intro-panel { padding: 20px 16px 14px; }
+    .intro-headline { font-size: 1.75rem; margin-bottom: 6px; }
+    .intro-sub { font-size: 0.56rem; margin-bottom: 14px; letter-spacing: 0.1em; }
+    .chips { gap: 6px; }
+    .chip { font-size: 0.56rem; padding: 7px 11px; letter-spacing: 0.06em; }
+    #chat-area { padding: 12px 12px 6px; flex: 1; min-height: 0; }
+    .bubble { font-size: 0.8rem; padding: 10px 13px; }
+    .msg-group { max-width: 92%; }
+    #input-area { padding: 8px 12px 14px; }
+    #user-input { font-size: 0.78rem; padding: 10px 12px; }
+    #send-btn { width: 40px; }
+    .disclaimer { font-size: 0.5rem; }
     #side-panel { width: 100%; }
+    .panel-body { padding: 16px 16px; gap: 18px; }
+    .panel-header { padding: 14px 16px; }
+    .panel-footer { padding: 12px 16px; }
   }
 </style>
 </head>
@@ -245,8 +283,21 @@
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
     </button>
+    <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" id="menu-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
   </div>
 </header>
+
+<!-- Mobile Nav Dropdown -->
+<div id="mobile-nav" class="mobile-nav">
+  <a href="index.html">Chat</a>
+  <a href="overview.html">Overview</a>
+  <a href="crops.html">Crops</a>
+  <a href="markets.html">Markets</a>
+</div>
 
 <div id="intro-panel">
   <div class="intro-headline">Grow <em>smarter,</em><br>not harder</div>
@@ -443,6 +494,20 @@ let selectedTrend = '';
 let userLocation = null;
 
 // ── Theme ──
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobile-nav');
+  nav.classList.toggle('open');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+  const nav = document.getElementById('mobile-nav');
+  const btn = document.getElementById('menu-btn');
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+    nav.classList.remove('open');
+  }
+});
+
 function toggleTheme() {
   isDark = !isDark;
   document.body.classList.toggle('dark', isDark);
