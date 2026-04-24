@@ -62,14 +62,21 @@
   .cta-btn { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 12px 28px; background: var(--ink); color: var(--bg); border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.2s; }
   .cta-btn:hover { background: var(--accent); }
 
-    @media (max-width: 600px) {
+   .mobile-menu-btn { display: none; }
+  .mobile-nav { display: none; flex-direction: column; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 9; }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a { padding: 14px 20px; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--border); transition: background 0.2s, color 0.2s; }
+  .mobile-nav a:last-child { border-bottom: none; }
+  .mobile-nav a:hover { background: var(--white); color: var(--ink); }
+
+  @media (max-width: 600px) {
     header { padding: 10px 14px; }
     .header-nav { display: none; }
     .glm-tag { display: none; }
     .mobile-menu-btn { display: flex; }
     .page { padding: 36px 18px; }
     .cta-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
-  } to { opacity: 1; transform: translateY(0); } }
+  }
 
 </style>
 </head>
