@@ -63,7 +63,11 @@
   .cta-btn:hover { background: var(--accent); }
 
     @media (max-width: 600px) {
-    header { padding: 10px 14px; flex-wrap: nowrap; }
+    header { padding: 10px 14px; }
+    .header-nav { display: none; }
+    .glm-tag { display: none; }
+    .mobile-menu-btn { display: flex; }
+    .icon-btn { width: 28px; height: 28px; }
     .header-nav { display: none; }
     .mobile-menu-btn { display: flex; }
     .glm-tag { display: none; }
@@ -108,13 +112,13 @@
   <nav class="header-nav">
     <a href="index.html">Chat</a>
     <a href="overview.html">Overview</a>
-    <a href="crops.html" class="active">Crops</a>
+    <a href="crops.html">Crops</a>
     <a href="markets.html">Markets</a>
   </nav>
   <div class="header-right">
     <div class="glm-tag">GLM · Powered</div>
-    <button id="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">
-      <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">
+      <svg id="theme-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
     </button>
@@ -125,14 +129,13 @@
     </button>
   </div>
 </header>
-<!-- Mobile Nav Dropdown -->
+
 <div id="mobile-nav" class="mobile-nav">
   <a href="index.html">Chat</a>
   <a href="overview.html">Overview</a>
   <a href="crops.html">Crops</a>
   <a href="markets.html">Markets</a>
 </div>
-
 
 <div class="page">
   <div class="page-label">Crop Reference</div>
@@ -276,7 +279,7 @@
 
   
 
-  function toggleMobileMenu() {
+    function toggleMobileMenu() {
     const nav = document.getElementById('mobile-nav');
     nav.classList.toggle('open');
   }
