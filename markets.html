@@ -80,8 +80,17 @@
   .cta-btn { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 12px 28px; background: var(--ink); color: var(--bg); border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.2s; }
   .cta-btn:hover { background: var(--accent); }
 
-  @media (max-width: 600px) {
-    .mobile-menu-btn { display: flex; } header { padding: 14px 18px; } .header-nav { display: none; } .page { padding: 36px 18px; } .trend-bar { display: none; } }
+    @media (max-width: 600px) {
+    header { padding: 10px 14px; flex-wrap: nowrap; }
+    .header-nav { display: none; }
+    .mobile-menu-btn { display: flex; }
+    .glm-tag { display: none; }
+    .icon-btn { width: 28px; height: 28px; }
+    .page { padding: 36px 18px; }
+    .trend-bar { display: none; }
+  } .header-nav { display: none; } .page { padding: 36px 18px; } .trend-bar { display: none; } }
+
+  to { opacity: 1; transform: translateY(0); } }
 
   .mobile-menu-btn { display: none; }
   .mobile-nav {
@@ -106,6 +115,7 @@
   .mobile-nav a:last-child { border-bottom: none; }
   .mobile-nav a:hover { background: var(--white); color: var(--ink); }
   @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
 </style>
 </head>
 <body>
@@ -126,9 +136,22 @@
       <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
+    <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" id="menu-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
     </button>
   </div>
 </header>
+<!-- Mobile Nav Dropdown -->
+<div id="mobile-nav" class="mobile-nav">
+  <a href="index.html">Chat</a>
+  <a href="overview.html">Overview</a>
+  <a href="crops.html">Crops</a>
+  <a href="markets.html">Markets</a>
+</div>
+
+
 
 <div class="page">
   <div class="page-label">Market Intelligence</div>
@@ -250,6 +273,8 @@
   }
   if (localStorage.getItem('theme') === 'dark') toggleTheme();
 
+  
+
   function toggleMobileMenu() {
     const nav = document.getElementById('mobile-nav');
     nav.classList.toggle('open');
@@ -261,6 +286,7 @@
       nav.classList.remove('open');
     }
   });
+
 </script>
 </body>
 </html>
