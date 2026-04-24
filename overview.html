@@ -70,46 +70,21 @@
   .cta-btn { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 12px 28px; background: var(--ink); color: var(--bg); border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.2s; }
   .cta-btn:hover { background: var(--accent); }
 
-    @media (max-width: 600px) {
-    header { padding: 10px 14px; flex-wrap: nowrap; justify-content: space-between; align-items: center; }
-    .header-nav { display: none; }
-    .mobile-menu-btn { display: flex; }
-    .glm-tag { display: none; }
-    .icon-btn {
-    width: 30px; height: 30px; border: 1px solid var(--border);
-    background: transparent; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--ink-soft); transition: all 0.2s; flex-shrink: 0;
-  }
-    .page { padding: 36px 18px; }
-    .cta-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
-  } .header-nav { display: none; } .page { padding: 36px 18px; } .cta-bar { flex-direction: column; gap: 16px; align-items: flex-start; } }
-
-  to { opacity: 1; transform: translateY(0); } }
-
   .mobile-menu-btn { display: none; }
-  .mobile-nav {
-    display: none;
-    flex-direction: column;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    z-index: 9;
-    animation: slideDown 0.2s ease;
-  }
+  .mobile-nav { display: none; flex-direction: column; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 9; }
   .mobile-nav.open { display: flex; }
-  .mobile-nav a {
-    padding: 14px 20px;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    text-decoration: none;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s, color 0.2s;
-  }
+  .mobile-nav a { padding: 14px 20px; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--border); transition: background 0.2s, color 0.2s; }
   .mobile-nav a:last-child { border-bottom: none; }
   .mobile-nav a:hover { background: var(--white); color: var(--ink); }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 600px) {
+    header { padding: 10px 14px; }
+    .header-nav { display: none; }
+    .glm-tag { display: none; }
+    .mobile-menu-btn { display: flex; }
+    .page { padding: 36px 18px; }
+    .cta-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
+  }
 
 </style>
 </head>
@@ -121,16 +96,17 @@
   </div>
   <nav class="header-nav">
     <a href="index.html">Chat</a>
-    <a href="overview.html" class="active">Overview</a>
+    <a href="overview.html">Overview</a>
     <a href="crops.html">Crops</a>
     <a href="markets.html">Markets</a>
   </nav>
   <div class="header-right">
     <div class="glm-tag">GLM · Powered</div>
-    <button id="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">
-      <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">
+      <svg id="theme-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
+    </button>
     <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" id="menu-btn">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -138,15 +114,13 @@
     </button>
   </div>
 </header>
-<!-- Mobile Nav Dropdown -->
+
 <div id="mobile-nav" class="mobile-nav">
   <a href="index.html">Chat</a>
   <a href="overview.html">Overview</a>
   <a href="crops.html">Crops</a>
   <a href="markets.html">Markets</a>
 </div>
-
-
 
 <div class="page">
   <div class="page-label">What is HarvestMind</div>
@@ -231,7 +205,7 @@
 
   
 
-  function toggleMobileMenu() {
+    function toggleMobileMenu() {
     const nav = document.getElementById('mobile-nav');
     nav.classList.toggle('open');
   }
