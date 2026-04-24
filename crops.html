@@ -17,11 +17,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--ink); font-family: 'Jost', sans-serif; font-weight: 300; min-height: 100dvh; transition: background 0.3s, color 0.3s; }
 
-    header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 28px; border-bottom: 1px solid var(--border);
-    flex-shrink: 0; transition: border-color 0.3s; z-index: 10; background: var(--bg);
-  }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 1px solid var(--border); transition: border-color 0.3s; }
   .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; letter-spacing: 0.04em; line-height: 1; }
   .logo-tag { font-size: 0.6rem; color: var(--ink-soft); letter-spacing: 0.18em; text-transform: uppercase; margin-top: 3px; }
   .header-nav { display: flex; gap: 32px; }
@@ -71,49 +67,9 @@
     .header-nav { display: none; }
     .glm-tag { display: none; }
     .mobile-menu-btn { display: flex; }
-      .icon-btn {
-    width: 30px; height: 30px; border: 1px solid var(--border);
-    background: transparent; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--ink-soft); transition: all 0.2s; flex-shrink: 0;
-  }
-    .header-nav { display: none; }
-    .mobile-menu-btn { display: flex; }
-    .glm-tag { display: none; }
-      .icon-btn {
-    width: 30px; height: 30px; border: 1px solid var(--border);
-    background: transparent; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--ink-soft); transition: all 0.2s; flex-shrink: 0;
-  }
     .page { padding: 36px 18px; }
-  } .header-nav { display: none; } .page { padding: 36px 18px; } }
-
-  to { opacity: 1; transform: translateY(0); } }
-
-  .mobile-menu-btn { display: none; }
-  .mobile-nav {
-    display: none;
-    flex-direction: column;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    z-index: 9;
-    animation: slideDown 0.2s ease;
-  }
-  .mobile-nav.open { display: flex; }
-  .mobile-nav a {
-    padding: 14px 20px;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    text-decoration: none;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s, color 0.2s;
-  }
-  .mobile-nav a:last-child { border-bottom: none; }
-  .mobile-nav a:hover { background: var(--white); color: var(--ink); }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .cta-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
+  } to { opacity: 1; transform: translateY(0); } }
 
 </style>
 </head>
