@@ -80,7 +80,32 @@
   .cta-btn { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 12px 28px; background: var(--ink); color: var(--bg); border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.2s; }
   .cta-btn:hover { background: var(--accent); }
 
-  @media (max-width: 600px) { header { padding: 14px 18px; } .header-nav { display: none; } .page { padding: 36px 18px; } .trend-bar { display: none; } }
+  @media (max-width: 600px) {
+    .mobile-menu-btn { display: flex; } header { padding: 14px 18px; } .header-nav { display: none; } .page { padding: 36px 18px; } .trend-bar { display: none; } }
+
+  .mobile-menu-btn { display: none; }
+  .mobile-nav {
+    display: none;
+    flex-direction: column;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    z-index: 9;
+    animation: slideDown 0.2s ease;
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a {
+    padding: 14px 20px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+  .mobile-nav a:last-child { border-bottom: none; }
+  .mobile-nav a:hover { background: var(--white); color: var(--ink); }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -224,6 +249,18 @@
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }
   if (localStorage.getItem('theme') === 'dark') toggleTheme();
+
+  function toggleMobileMenu() {
+    const nav = document.getElementById('mobile-nav');
+    nav.classList.toggle('open');
+  }
+  document.addEventListener('click', (e) => {
+    const nav = document.getElementById('mobile-nav');
+    const btn = document.getElementById('menu-btn');
+    if (nav && btn && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+      nav.classList.remove('open');
+    }
+  });
 </script>
 </body>
 </html>
