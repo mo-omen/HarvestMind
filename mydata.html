@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HarvestMind - My Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8; --ink: #1a1612; --ink-soft: #6b6560; --ink-faint: #b5b0aa;
+    --accent: #8a7a5a; --accent-light: #c8b898; --border: #d8d0c4; --white: #faf8f4;
+    --up: #4a7a3a; --down: #8c3a2a; --neutral: #6b6560;
+  }
+  body.dark {
+    --bg: #141210; --ink: #e8e0d0; --ink-soft: #8a8278; --ink-faint: #3e3a36;
+    --accent: #a89060; --accent-light: #5a4c2e; --border: #2c2824; --white: #1e1b18;
+    --up: #6aaa5a; --down: #cc6050;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Jost', sans-serif; font-weight: 300; min-height: 100dvh; transition: background 0.3s, color 0.3s; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 1px solid var(--border); transition: border-color 0.3s; }
+  .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; letter-spacing: 0.04em; line-height: 1; }
+  .logo-tag { font-size: 0.6rem; color: var(--ink-soft); letter-spacing: 0.18em; text-transform: uppercase; margin-top: 3px; }
+  .header-nav { display: flex; gap: 32px; }
+  .header-nav a { font-size: 0.72rem; color: var(--ink-soft); text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.2s; }
+  .header-nav a:hover, .header-nav a.active { color: var(--ink); }
+  .header-right { display: flex; align-items: center; gap: 14px; }
+  .glm-tag { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent-light); padding: 3px 10px; }
+  .icon-btn { width: 30px; height: 30px; border: 1px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink-soft); transition: all 0.2s; flex-shrink: 0; }
+  .icon-btn:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .mobile-menu-btn { display: none; }
+  .mobile-nav { display: none; flex-direction: column; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 9; }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a { padding: 14px 20px; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--border); transition: background 0.2s, color 0.2s; }
+  .page { max-width: 980px; margin: 0 auto; padding: 56px 32px; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .page-label { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 300; line-height: 1.1; margin-bottom: 16px; }
+  .page-title em { font-style: italic; color: var(--accent); }
+  .page-lead { font-size: 0.9rem; line-height: 1.85; color: var(--ink-soft); max-width: 620px; margin-bottom: 36px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 36px; }
+  .action-btn { font-size: 0.68rem; letter-spacing: 0.13em; text-transform: uppercase; padding: 11px 18px; border: 1px solid var(--ink); background: var(--ink); color: var(--bg); cursor: pointer; text-decoration: none; transition: all 0.2s; }
+  .action-btn.secondary { background: transparent; color: var(--ink); border-color: var(--border); }
+  .action-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .panel { background: var(--bg); padding: 26px; min-height: 220px; }
+  .panel-title { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 400; margin-bottom: 18px; }
+  .data-list { display: grid; gap: 12px; }
+  .data-row { display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .data-row span:first-child { color: var(--ink-faint); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .data-row span:last-child { color: var(--ink); text-align: right; }
+  .decision { font-family: 'Cormorant Garamond', serif; font-size: 2.3rem; color: var(--accent); line-height: 1; margin-bottom: 10px; text-transform: capitalize; }
+  .muted { color: var(--ink-soft); font-size: 0.82rem; line-height: 1.7; }
+  .freshness { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill { font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 9px; border: 1px solid var(--border); color: var(--ink-soft); }
+  .pill.stale { border-color: #a08030; color: #a08030; }
+  @media (max-width: 760px) {
+    header { padding: 10px 14px; }
+    .header-nav { display: none; }
+    .glm-tag { display: none; }
+    .mobile-menu-btn { display: flex; }
+    .page { padding: 36px 18px; }
+    .grid { grid-template-columns: 1fr; }
+    .data-row { flex-direction: column; gap: 4px; }
+    .data-row span:last-child { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo-name">HarvestMind</div>
+    <div class="logo-tag">Decision Intelligence</div>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html">Chat</a>
+    <a href="overview.html">Overview</a>
+    <a href="crops.html">Crops</a>
+    <a href="markets.html">Markets</a>
+    <a href="mydata.html" class="active">My Data</a>
+  </nav>
+  <div class="header-right">
+    <div class="glm-tag">GLM · Powered</div>
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">
+      <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" id="menu-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<div id="mobile-nav" class="mobile-nav">
+  <a href="index.html">Chat</a>
+  <a href="overview.html">Overview</a>
+  <a href="crops.html">Crops</a>
+  <a href="markets.html">Markets</a>
+  <a href="mydata.html">My Data</a>
+</div>
+
+<div class="page">
+  <div class="page-label">Personal Farm Profile</div>
+  <h1 class="page-title">Your farm <em>data room</em></h1>
+  <p class="page-lead">Saved profile details, data freshness, and the latest personalized recommendation for the demo farmer profile.</p>
+
+  <div class="toolbar">
+    <a class="action-btn" href="index.html?mode=profile-setup">Setup with chat</a>
+    <a class="action-btn secondary" href="index.html?mode=profile-update">Update profile</a>
+    <button class="action-btn secondary" onclick="runProfileAnalysis()" id="rerun-btn">Run analysis</button>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="panel-title">Profile</div>
+      <div class="data-list" id="profile-list">
+        <p class="muted">Loading profile...</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">Latest Recommendation</div>
+      <div id="recommendation-box">
+        <p class="muted">Loading recommendation...</p>
+      </div>
+      <div class="freshness" id="freshness"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const FARMER_ID = 'demo-farmer';
+  let currentProfile = null;
+
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  async function loadMyData() {
+    await Promise.all([loadProfile(), loadRecommendation(), loadFreshness()]);
+  }
+
+  async function loadProfile() {
+    const box = document.getElementById('profile-list');
+    try {
+      const response = await fetch(`/api/v1/profiles/${FARMER_ID}`);
+      if (!response.ok) throw new Error('not found');
+      currentProfile = await response.json();
+      const crops = [currentProfile.current_crop, ...(currentProfile.candidate_crops || [])].filter(Boolean).join(', ') || 'Not set';
+      box.innerHTML = `
+        ${row('Location', currentProfile.location)}
+        ${row('Crops', crops)}
+        ${row('Expected harvest', currentProfile.expected_harvest_date || `${currentProfile.expected_harvest_days || 'Not set'} days`)}
+        ${row('Farm size', currentProfile.farm_size_hectares ? `${currentProfile.farm_size_hectares} ha` : 'Not set')}
+        ${row('Current price', currentProfile.current_price_rm_per_kg ? `RM ${currentProfile.current_price_rm_per_kg}/kg` : 'Not set')}
+      `;
+    } catch {
+      box.innerHTML = '<p class="muted">No profile saved yet. Use setup chat to create the demo farmer profile.</p>';
+    }
+  }
+
+  async function loadRecommendation() {
+    const box = document.getElementById('recommendation-box');
+    try {
+      const response = await fetch(`/api/v1/recommendations/${FARMER_ID}?limit=1`);
+      if (!response.ok) throw new Error('not found');
+      const data = await response.json();
+      const latest = data.items?.[0];
+      if (!latest) throw new Error('empty');
+      const summary = latest.evidence_packet?.price_signal || 'Latest evidence is saved in the backend.';
+      box.innerHTML = `<div class="decision">${esc(latest.decision.replaceAll('_', ' '))}</div><p class="muted">Confidence ${(Number(latest.confidence) * 100).toFixed(0)}%. ${esc(summary)}</p>`;
+    } catch {
+      box.innerHTML = '<p class="muted">No recommendation run yet. Run analysis after setting up the profile.</p>';
+    }
+  }
+
+  async function loadFreshness() {
+    const box = document.getElementById('freshness');
+    try {
+      const response = await fetch(`/api/v1/signals/${FARMER_ID}/latest`);
+      if (!response.ok) throw new Error('not found');
+      const data = await response.json();
+      box.innerHTML = ['price', 'weather', 'news'].map(type => {
+        const item = data[type];
+        return `<span class="pill ${item ? '' : 'stale'}">${type}: ${item ? 'saved' : 'missing'}</span>`;
+      }).join('');
+    } catch {
+      box.innerHTML = '<span class="pill stale">signals missing</span>';
+    }
+  }
+
+  async function runProfileAnalysis() {
+    if (!currentProfile) {
+      alert('Set up a profile first.');
+      return;
+    }
+    const btn = document.getElementById('rerun-btn');
+    btn.disabled = true;
+    btn.textContent = 'Running...';
+    try {
+      const harvestDays = currentProfile.expected_harvest_days || daysUntil(currentProfile.expected_harvest_date) || 30;
+      const response = await fetch('/api/v1/analysis/decision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          farmer_id: FARMER_ID,
+          location: currentProfile.location,
+          crop: currentProfile.current_crop || currentProfile.preferred_crops?.[0] || 'chili',
+          candidate_crops: currentProfile.candidate_crops || currentProfile.preferred_crops || [],
+          expected_harvest_days: harvestDays,
+          farm_size_hectares: currentProfile.farm_size_hectares,
+          labor_flexibility_pct: currentProfile.labor_flexibility_pct || 25,
+          price_trend_hint: 'stable',
+          weather_risk_level: 'medium',
+          news_signals: []
+        })
+      });
+      if (!response.ok) throw new Error(await response.text());
+      await loadRecommendation();
+      await loadFreshness();
+    } catch (err) {
+      alert('Analysis failed. Check backend, database, and ILMU_API_KEY.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Run analysis';
+    }
+  }
+
+  function daysUntil(value) {
+    if (!value) return null;
+    const target = new Date(value);
+    if (Number.isNaN(target.getTime())) return null;
+    return Math.max(1, Math.ceil((target - new Date()) / 86400000));
+  }
+
+  function row(label, value) {
+    return `<div class="data-row"><span>${esc(label)}</span><span>${esc(value || 'Not set')}</span></div>`;
+  }
+
+  let isDark = false;
+  function toggleTheme() {
+    isDark = !isDark;
+    document.body.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+  if (localStorage.getItem('theme') === 'dark') toggleTheme();
+
+  function toggleMobileMenu() {
+    document.getElementById('mobile-nav').classList.toggle('open');
+  }
+
+  loadMyData();
+</script>
+</body>
+</html>

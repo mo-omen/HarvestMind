@@ -64,7 +64,7 @@
   .signal.sell { border-color: var(--down); color: var(--down); }
 
   .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400; margin-bottom: 20px; }
-  .signals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 48px; }
+  .signals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 48px; }
   .signal-card { background: var(--bg); padding: 22px 20px; transition: background 0.2s; }
   .signal-card:hover { background: var(--white); }
   .signal-label { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
@@ -84,6 +84,7 @@
     .glm-tag { display: none; }
     .mobile-menu-btn { display: flex; }
     .page { padding: 36px 18px; }
+    .signals-grid { grid-template-columns: 1fr; }
     .trend-bar { display: none; }
     .cta-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
   }
@@ -100,6 +101,7 @@
     <a href="overview.html">Overview</a>
     <a href="crops.html">Crops</a>
     <a href="markets.html" class="active">Markets</a>
+    <a href="mydata.html">My Data</a>
   </nav>
   <div class="header-right">
     <div class="glm-tag">GLM · Powered</div>
@@ -121,6 +123,7 @@
   <a href="overview.html">Overview</a>
   <a href="crops.html">Crops</a>
   <a href="markets.html">Markets</a>
+  <a href="mydata.html">My Data</a>
 </div>
 
 <div class="page">
@@ -128,6 +131,7 @@
   <h1 class="page-title">Malaysian <em>crop prices</em></h1>
   <p class="page-lead">Reference price ranges and market signals for key Malaysian agricultural commodities. Use these signals alongside the AI chat to make better timing decisions.</p>
   <div class="notice">⚠ Indicative prices only — verify with FAMA or your local market before making decisions</div>
+  <div class="notice" id="market-meta">Loading source status...</div>
 
   <table class="price-table">
     <thead>
@@ -135,24 +139,14 @@
         <th>Crop</th><th>Price Range (RM/kg)</th><th>Trend</th><th>30d Change</th><th>Signal</th>
       </tr>
     </thead>
-    <tbody>
-      <tr><td><div class="crop-cell"><span>🌶</span> Chili (Red)</div></td><td><span class="price">3.50 – 6.00</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:35%;background:var(--down)"></div></div></td><td><span class="change down">▼ –18%</span></td><td><span class="signal watch">Watch</span></td></tr>
-      <tr><td><div class="crop-cell"><span>🫚</span> Ginger</div></td><td><span class="price">4.00 – 7.50</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:75%;background:var(--up)"></div></div></td><td><span class="change up">▲ +12%</span></td><td><span class="signal buy">Buy</span></td></tr>
-      <tr><td><div class="crop-cell"><span>🥬</span> Kangkung</div></td><td><span class="price">1.20 – 2.50</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:55%;background:var(--neutral)"></div></div></td><td><span class="change flat">→ Stable</span></td><td><span class="signal hold">Hold</span></td></tr>
-      <tr><td><div class="crop-cell"><span>🍅</span> Tomato</div></td><td><span class="price">2.80 – 5.00</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:60%;background:var(--up)"></div></div></td><td><span class="change up">▲ +8%</span></td><td><span class="signal buy">Buy</span></td></tr>
-      <tr><td><div class="crop-cell"><span>🍈</span> Durian (Musang King)</div></td><td><span class="price">35.00 – 80.00</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:80%;background:var(--up)"></div></div></td><td><span class="change up">▲ +22%</span></td><td><span class="signal buy">Buy</span></td></tr>
-      <tr><td><div class="crop-cell"><span>🍌</span> Banana (Berangan)</div></td><td><span class="price">1.50 – 3.20</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:30%;background:var(--down)"></div></div></td><td><span class="change down">▼ –9%</span></td><td><span class="signal hold">Hold</span></td></tr>
-      <tr><td><div class="crop-cell"><span>🧄</span> Turmeric</div></td><td><span class="price">3.00 – 5.50</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:65%;background:var(--up)"></div></div></td><td><span class="change up">▲ +6%</span></td><td><span class="signal hold">Hold</span></td></tr>
-      <tr><td><div class="crop-cell"><span>🥒</span> Cucumber</div></td><td><span class="price">1.00 – 2.20</span></td><td><div class="trend-bar"><div class="trend-fill" style="width:20%;background:var(--down)"></div></div></td><td><span class="change down">▼ –14%</span></td><td><span class="signal sell">Sell Now</span></td></tr>
+    <tbody id="market-body">
+      <tr><td colspan="5">Loading live market data...</td></tr>
     </tbody>
   </table>
 
   <div class="section-title">Key market signals</div>
-  <div class="signals-grid">
-    <div class="signal-card"><div class="signal-label"><span class="signal-dot dot-red"></span>Risk Alert</div><div class="signal-title">Chili oversupply building</div><div class="signal-text">Regional output from Kelantan and Johor is 20% above seasonal average. Price pressure expected through Q3.</div></div>
-    <div class="signal-card"><div class="signal-label"><span class="signal-dot dot-green"></span>Opportunity</div><div class="signal-title">Durian export demand surging</div><div class="signal-text">China demand for Musang King up 30% YoY. Growers with existing trees should prioritise harvest scheduling.</div></div>
-    <div class="signal-card"><div class="signal-label"><span class="signal-dot dot-yellow"></span>Watch</div><div class="signal-title">Monsoon season approaching</div><div class="signal-text">East Coast states entering monsoon window. Farmers should assess drainage infrastructure and adjust planting timelines.</div></div>
-    <div class="signal-card"><div class="signal-label"><span class="signal-dot dot-green"></span>Opportunity</div><div class="signal-title">Ginger prices rising</div><div class="signal-text">Domestic demand from food processing sector increasing. Good window to lock in forward contracts with buyers.</div></div>
+  <div class="signals-grid" id="signals-grid">
+    <div class="signal-card"><div class="signal-label"><span class="signal-dot dot-yellow"></span>Loading</div><div class="signal-title">Refreshing signals</div><div class="signal-text">HarvestMind is checking the latest market signal snapshot.</div></div>
   </div>
 
   <div class="cta-bar">
@@ -162,6 +156,70 @@
 </div>
 
 <script>
+  const marketBody = document.getElementById('market-body');
+  const signalsGrid = document.getElementById('signals-grid');
+  const marketMeta = document.getElementById('market-meta');
+
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function changeClass(value) {
+    if (value > 2) return 'up';
+    if (value < -2) return 'down';
+    return 'flat';
+  }
+
+  function changeLabel(value) {
+    if (value > 2) return `▲ +${value.toFixed(1)}%`;
+    if (value < -2) return `▼ ${value.toFixed(1)}%`;
+    return '→ Stable';
+  }
+
+  function trendColor(trend) {
+    if (trend === 'rising') return 'var(--up)';
+    if (trend === 'falling') return 'var(--down)';
+    return 'var(--neutral)';
+  }
+
+  async function loadMarket() {
+    try {
+      const response = await fetch('/api/v1/market/summary');
+      if (!response.ok) throw new Error('market summary unavailable');
+      const data = await response.json();
+      const first = data.items[0];
+      marketMeta.textContent = first
+        ? `Source: ${first.source.replaceAll('_', ' ')} · Updated ${new Date(data.generated_at).toLocaleString()}`
+        : 'No market rows available yet';
+      marketBody.innerHTML = data.items.map(item => `
+        <tr>
+          <td><div class="crop-cell"><span>${esc(item.emoji)}</span> ${esc(item.display_name)}</div></td>
+          <td><span class="price">${Number(item.price_min_rm_per_kg).toFixed(2)} - ${Number(item.price_max_rm_per_kg).toFixed(2)}</span></td>
+          <td><div class="trend-bar"><div class="trend-fill" style="width:${Number(item.trend_score)}%;background:${trendColor(item.trend)}"></div></div></td>
+          <td><span class="change ${changeClass(Number(item.change_30d_pct))}">${changeLabel(Number(item.change_30d_pct))}</span></td>
+          <td><span class="signal ${esc(item.signal)}">${esc(item.signal)}</span></td>
+        </tr>
+      `).join('');
+    } catch {
+      marketBody.innerHTML = '<tr><td colspan="5">Market data is unavailable. Start the Docker backend or try refreshing later.</td></tr>';
+      marketMeta.textContent = 'Market backend unavailable';
+    }
+
+    try {
+      const response = await fetch('/api/v1/market/signals');
+      if (!response.ok) throw new Error('market signals unavailable');
+      const data = await response.json();
+      signalsGrid.innerHTML = data.cards.map(card => {
+        const dot = card.severity === 'risk' ? 'dot-red' : card.severity === 'opportunity' ? 'dot-green' : 'dot-yellow';
+        return `<div class="signal-card"><div class="signal-label"><span class="signal-dot ${dot}"></span>${esc(card.label)}</div><div class="signal-title">${esc(card.title)}</div><div class="signal-text">${esc(card.summary)}</div></div>`;
+      }).join('');
+    } catch {
+      signalsGrid.innerHTML = '<div class="signal-card"><div class="signal-label"><span class="signal-dot dot-yellow"></span>Watch</div><div class="signal-title">Signals unavailable</div><div class="signal-text">Weekly GLM market signals will appear after the backend scheduler or refresh endpoint runs.</div></div>';
+    }
+  }
+
+  loadMarket();
+
   let isDark = false;
   function toggleTheme() {
     isDark = !isDark;

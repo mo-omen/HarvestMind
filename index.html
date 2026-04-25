@@ -273,12 +273,16 @@
     <a href="overview.html">Overview</a>
     <a href="crops.html">Crops</a>
     <a href="markets.html">Markets</a>
+    <a href="mydata.html">My Data</a>
   </nav>
   <div class="header-right">
     <div class="glm-tag">GLM · Powered</div>
     <button class="analyse-btn" onclick="openPanel()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Run Analysis
+    </button>
+    <button class="icon-btn" onclick="newChat()" id="new-chat-btn" title="Start new chat">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
     </button>
     <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">
       <svg id="theme-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -299,6 +303,7 @@
   <a href="overview.html">Overview</a>
   <a href="crops.html">Crops</a>
   <a href="markets.html">Markets</a>
+  <a href="mydata.html">My Data</a>
 </div>
 
 <div id="intro-panel">
@@ -336,7 +341,7 @@
   <div class="panel-header">
     <div>
       <div class="panel-title">Run Analysis</div>
-      <div class="panel-sub">Fill in your farm data for a full recommendation</div>
+      <div class="panel-sub">Give farm context; HarvestMind gathers market, weather, and news</div>
     </div>
     <button class="close-btn" onclick="closePanel()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -386,78 +391,37 @@
       </div>
     </div>
 
-    <!-- Price Data -->
     <div>
-      <div class="panel-section-label">💰 Historical Price Data</div>
-      <div class="field">
-        <label>Current price trend for your main crop</label>
-        <div class="trend-selector">
-          <div class="trend-opt up" onclick="selectTrend(this,'up')">▲ Rising</div>
-          <div class="trend-opt stable" onclick="selectTrend(this,'stable')">→ Stable</div>
-          <div class="trend-opt down" onclick="selectTrend(this,'down')">▼ Falling</div>
+      <div class="panel-section-label">Harvest Timing</div>
+      <div class="row2">
+        <div class="field">
+          <label>Days until harvest</label>
+          <input type="number" id="harvest-days" placeholder="e.g. 45" min="1" max="365">
+        </div>
+        <div class="field">
+          <label>Farm size (hectares)</label>
+          <input type="number" id="farm-size" placeholder="e.g. 2.5" min="0" step="0.1">
         </div>
       </div>
-      <div class="row2" style="margin-top:10px">
+    </div>
+
+    <div>
+      <div class="panel-section-label">Optional Local Quote</div>
+      <div class="row2">
         <div class="field">
           <label>Current price (RM/kg)</label>
           <input type="number" id="current-price" placeholder="e.g. 4.50" step="0.10" min="0">
         </div>
         <div class="field">
-          <label>Price 1 month ago (RM/kg)</label>
-          <input type="number" id="prev-price" placeholder="e.g. 5.20" step="0.10" min="0">
+          <label>Price trend if known</label>
+          <div class="trend-selector">
+            <div class="trend-opt up" onclick="selectTrend(this,'up')">Rising</div>
+            <div class="trend-opt stable" onclick="selectTrend(this,'stable')">Stable</div>
+            <div class="trend-opt down" onclick="selectTrend(this,'down')">Falling</div>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Weather -->
-    <div>
-      <div class="panel-section-label">🌤 Local Weather Patterns</div>
-      <div class="row2">
-        <div class="field">
-          <label>Rainfall (mm/week)</label>
-          <input type="number" id="rainfall" placeholder="e.g. 120" min="0">
-        </div>
-        <div class="field">
-          <label>Avg Temperature (°C)</label>
-          <input type="number" id="temperature" placeholder="e.g. 32" min="0" max="50">
-        </div>
-      </div>
-      <div class="field" style="margin-top:10px">
-        <label>Humidity level</label>
-        <select id="humidity">
-          <option value="">Select humidity</option>
-          <option value="Low (below 60%)">Low (below 60%)</option>
-          <option value="Moderate (60–80%)">Moderate (60–80%)</option>
-          <option value="High (above 80%)">High (above 80%)</option>
-        </select>
-      </div>
-      <div class="field" style="margin-top:10px">
-        <label>Upcoming weather forecast</label>
-        <select id="forecast">
-          <option value="">Select forecast</option>
-          <option value="Dry season expected">Dry season expected</option>
-          <option value="Heavy monsoon rain expected">Heavy monsoon rain expected</option>
-          <option value="Normal seasonal weather">Normal seasonal weather</option>
-          <option value="Unpredictable / extreme weather">Unpredictable / extreme weather</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- News & Reports -->
-    <div>
-      <div class="panel-section-label">📰 News & Reports</div>
-      <div class="field">
-        <label>Government policy changes</label>
-        <textarea id="policy" placeholder="e.g. New subsidy for fertiliser, export ban on chili…"></textarea>
-      </div>
-      <div class="field">
-        <label>Pest or disease outbreaks nearby</label>
-        <textarea id="pest" placeholder="e.g. Papaya ringspot virus reported in Kedah…"></textarea>
-      </div>
-      <div class="field">
-        <label>International tariffs or trade news</label>
-        <textarea id="tariff" placeholder="e.g. China increased import tariff on durian by 10%…"></textarea>
-      </div>
+      <p class="disclaimer" style="text-align:left;margin-top:10px">Market history, weather forecasts, and news reports are gathered by the backend during analysis.</p>
     </div>
 
   </div>
@@ -489,11 +453,26 @@ const chatArea = document.getElementById('chat-area');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const introPanel = document.getElementById('intro-panel');
+const FARMER_ID = 'demo-farmer';
+const CHAT_HISTORY_KEY = 'harvestmind.chat.history';
+const CHAT_TRANSCRIPT_KEY = 'harvestmind.chat.transcript';
 let conversationHistory = [];
+let chatTranscript = [];
 let firstMessage = true;
 let isDark = false;
 let selectedTrend = '';
 let userLocation = null;
+let profileMode = new URLSearchParams(location.search).get('mode');
+let profileStep = 0;
+let profileDraft = { farmer_id: FARMER_ID, preferred_crops: [], candidate_crops: [] };
+const profileQuestions = [
+  { key: 'location', prompt: 'Where is your farm located? Use a Malaysian town, district, or state, for example Muar, Johor.' },
+  { key: 'current_crop', prompt: 'What is your current main crop?' },
+  { key: 'expected_harvest_date', prompt: 'When do you expect to harvest? Send a date like 2026-06-15, or a number of days like 45 days.' },
+  { key: 'current_price_rm_per_kg', prompt: 'What price are you currently seeing for this crop in RM per kg?' },
+  { key: 'farm_size_hectares', prompt: 'How large is the farm area in hectares?' },
+  { key: 'candidate_crops', prompt: 'Which alternative crops would you consider? Separate multiple crops with commas.' }
+];
 
 // ── Theme ──
 function toggleMobileMenu() {
@@ -586,58 +565,53 @@ function selectTrend(el, type) {
 }
 
 // ── Run Analysis ──
-function runAnalysis() {
+async function runAnalysis() {
   const crops = [...document.querySelectorAll('.crop-tag.selected')].map(t => t.textContent.trim());
   const otherCrop = document.getElementById('other-crop').value.trim();
   const allCrops = [...crops, otherCrop].filter(Boolean);
-
-  const currentPrice = document.getElementById('current-price').value;
-  const prevPrice = document.getElementById('prev-price').value;
-  const rainfall = document.getElementById('rainfall').value;
-  const temperature = document.getElementById('temperature').value;
-  const humidity = document.getElementById('humidity').value;
-  const forecast = document.getElementById('forecast').value;
-  const policy = document.getElementById('policy').value.trim();
-  const pest = document.getElementById('pest').value.trim();
-  const tariff = document.getElementById('tariff').value.trim();
+  const harvestDays = Number(document.getElementById('harvest-days').value) || 30;
+  const farmSize = Number(document.getElementById('farm-size').value) || null;
+  const currentPrice = Number(document.getElementById('current-price').value) || null;
 
   if (allCrops.length === 0) {
     alert('Please select at least one crop.');
     return;
   }
 
-  // Build structured prompt
-  let prompt = `Please analyse my farm situation and give me a full recommendation.\n\n`;
-
-  if (userLocation) prompt += `📍 Location: ${userLocation.name}\n\n`;
-
-  prompt += `🌱 Current Crops: ${allCrops.join(', ')}\n\n`;
-
-  prompt += `💰 Price Data:\n`;
-  if (currentPrice) prompt += `- Current price: RM ${currentPrice}/kg\n`;
-  if (prevPrice) prompt += `- Price 1 month ago: RM ${prevPrice}/kg\n`;
-  if (selectedTrend) prompt += `- Trend: ${selectedTrend === 'up' ? '▲ Rising' : selectedTrend === 'down' ? '▼ Falling' : '→ Stable'}\n`;
-
-  prompt += `\n🌤 Weather Conditions:\n`;
-  if (rainfall) prompt += `- Rainfall: ${rainfall}mm/week\n`;
-  if (temperature) prompt += `- Temperature: ${temperature}°C\n`;
-  if (humidity) prompt += `- Humidity: ${humidity}\n`;
-  if (forecast) prompt += `- Forecast: ${forecast}\n`;
-
-  prompt += `\n📰 News & Reports:\n`;
-  if (policy) prompt += `- Policy: ${policy}\n`;
-  if (pest) prompt += `- Pest/Disease: ${pest}\n`;
-  if (tariff) prompt += `- Trade: ${tariff}\n`;
-
-  if (!policy && !pest && !tariff) prompt += `- No significant news reported\n`;
-
-  prompt += `\nBased on all of this, should I Pivot, Persevere, or Harvest Early? Give me specific actionable advice.`;
-
   closePanel();
   if (firstMessage) { introPanel.classList.add('hidden'); firstMessage = false; }
+  createGroup('user', `Farm Analysis Request: ${allCrops.join(', ')}${userLocation?.name ? ` in ${userLocation.name}` : ''}`);
+  persistChat();
+  showTyping();
 
-  userInput.value = prompt;
-  sendMessage();
+  try {
+    const response = await fetch('/api/v1/analysis/decision', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        farmer_id: FARMER_ID,
+        location: userLocation?.name || 'Malaysia',
+        crop: allCrops[0],
+        candidate_crops: allCrops.slice(1),
+        expected_harvest_days: harvestDays,
+        farm_size_hectares: farmSize,
+        labor_flexibility_pct: 25,
+        price_trend_hint: selectedTrend === 'up' ? 'rising' : selectedTrend === 'down' ? 'falling' : 'stable',
+        weather_risk_level: 'medium',
+        news_signals: currentPrice ? [`Current local quote: RM ${currentPrice}/kg`] : []
+      })
+    });
+    if (!response.ok) throw new Error(await response.text());
+    const result = await response.json();
+    removeTyping();
+    createGroup('ai', formatDecisionResponse(result), true);
+    conversationHistory.push({ role: 'assistant', content: result.summary || result.decision || 'Analysis complete.' });
+    persistChat();
+  } catch (err) {
+    removeTyping();
+    createGroup('ai', 'Analysis could not run. Check that the Docker backend, database, and ILMU_API_KEY are configured.');
+    persistChat();
+  }
 }
 
 // ── Chat ──
@@ -650,7 +624,7 @@ userInput.addEventListener('keydown', (e) => {
 });
 function sendChip(el) { userInput.value = el.textContent.trim(); sendMessage(); }
 
-function createGroup(role, html, isHTML = false) {
+function createGroup(role, html, isHTML = false, save = true) {
   const group = document.createElement('div');
   group.className = `msg-group ${role}`;
   const label = document.createElement('div');
@@ -668,6 +642,10 @@ function createGroup(role, html, isHTML = false) {
   group.appendChild(label); group.appendChild(row);
   chatArea.appendChild(group);
   chatArea.scrollTop = chatArea.scrollHeight;
+  if (save) {
+    chatTranscript.push({ role, content: html, isHTML });
+    persistChat();
+  }
 }
 
 function showTyping() {
@@ -695,9 +673,30 @@ function formatAIResponse(text) {
   return `<p>${html}</p>`;
 }
 
+function formatDecisionResponse(result) {
+  const decision = String(result.decision || '').replaceAll('_', ' ');
+  const reasons = (result.reasons || []).slice(0, 3).map(item => `<li>${escapeHTML(item)}</li>`).join('');
+  const actions = (result.actions || []).slice(0, 3).map(item => `<li>${escapeHTML(item)}</li>`).join('');
+  return `
+    <p><span class="highlight">${escapeHTML(decision)}</span></p>
+    <p>${escapeHTML(result.summary || 'Recommendation generated from market, weather, and news evidence.')}</p>
+    <p><strong>Confidence:</strong> ${Math.round(Number(result.confidence || 0) * 100)}% · <strong>Review:</strong> ${escapeHTML(result.next_review_days || 7)} days</p>
+    <p><strong>Why:</strong></p><ul>${reasons}</ul>
+    <p><strong>Actions:</strong></p><ul>${actions}</ul>
+  `;
+}
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 async function sendMessage() {
   const text = userInput.value.trim();
   if (!text || sendBtn.disabled) return;
+  if (profileMode === 'profile-setup' || profileMode === 'profile-update') {
+    await handleProfileAnswer(text);
+    return;
+  }
   if (firstMessage) { introPanel.classList.add('hidden'); firstMessage = false; }
 
   userInput.value = ''; userInput.style.height = 'auto';
@@ -707,6 +706,7 @@ async function sendMessage() {
   const displayText = text.startsWith('Please analyse my farm') ? '📊 Farm Analysis Request' : text;
   createGroup('user', displayText);
   conversationHistory.push({ role: 'user', content: text });
+  persistChat();
   showTyping();
 
   try {
@@ -716,7 +716,7 @@ async function sendMessage() {
       body: JSON.stringify({
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          ...conversationHistory
+          ...conversationHistory.slice(-10)
         ]
       })
     });
@@ -725,14 +725,154 @@ async function sendMessage() {
     const aiText = data.choices?.[0]?.message?.content || "I'm having trouble connecting. Please try again.";
     conversationHistory.push({ role: 'assistant', content: aiText });
     createGroup('ai', formatAIResponse(aiText), true);
+    persistChat();
   } catch (err) {
     removeTyping();
     createGroup('ai', 'Connection issue. Make sure the server is running.');
+    persistChat();
   }
 
   sendBtn.disabled = false;
   userInput.focus();
 }
+
+function persistChat() {
+  localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(conversationHistory.slice(-20)));
+  localStorage.setItem(CHAT_TRANSCRIPT_KEY, JSON.stringify(chatTranscript.slice(-40)));
+}
+
+function restoreChat() {
+  if (profileMode === 'profile-setup' || profileMode === 'profile-update') return;
+  try {
+    conversationHistory = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY) || '[]');
+    chatTranscript = JSON.parse(localStorage.getItem(CHAT_TRANSCRIPT_KEY) || '[]');
+  } catch {
+    conversationHistory = [];
+    chatTranscript = [];
+  }
+  if (!chatTranscript.length) return;
+  introPanel.classList.add('hidden');
+  firstMessage = false;
+  const saved = [...chatTranscript];
+  chatTranscript = [];
+  saved.forEach(item => createGroup(item.role, item.content, Boolean(item.isHTML), false));
+  chatTranscript = saved;
+}
+
+function newChat() {
+  profileMode = null;
+  profileStep = 0;
+  conversationHistory = [];
+  chatTranscript = [];
+  localStorage.removeItem(CHAT_HISTORY_KEY);
+  localStorage.removeItem(CHAT_TRANSCRIPT_KEY);
+  chatArea.innerHTML = '';
+  firstMessage = true;
+  introPanel.classList.remove('hidden');
+  userInput.value = '';
+  if (location.search) history.replaceState(null, '', 'index.html');
+  userInput.focus();
+}
+
+async function startProfileMode() {
+  if (profileMode !== 'profile-setup' && profileMode !== 'profile-update') return;
+  introPanel.classList.add('hidden');
+  firstMessage = false;
+  if (profileMode === 'profile-update') {
+    try {
+      const response = await fetch(`/api/v1/profiles/${FARMER_ID}`);
+      if (response.ok) {
+        const existing = await response.json();
+        profileDraft = { ...existing, farmer_id: FARMER_ID };
+      }
+    } catch {}
+  }
+  const intro = profileMode === 'profile-update'
+    ? 'Let us update your saved farm profile. Reply "skip" to keep any existing value.'
+    : 'Let us set up your farm profile. I will ask a few short questions and save the answers to My Data.';
+  createGroup('ai', `${intro}\n\n${profileQuestions[profileStep].prompt}`);
+}
+
+async function handleProfileAnswer(text) {
+  if (firstMessage) { introPanel.classList.add('hidden'); firstMessage = false; }
+  userInput.value = '';
+  userInput.style.height = 'auto';
+  sendBtn.disabled = true;
+  createGroup('user', text);
+
+  const field = profileQuestions[profileStep];
+  if (text.trim().toLowerCase() !== 'skip') {
+    applyProfileValue(field.key, text.trim());
+  }
+  profileStep += 1;
+
+  if (profileStep < profileQuestions.length) {
+    createGroup('ai', profileQuestions[profileStep].prompt);
+    sendBtn.disabled = false;
+    userInput.focus();
+    return;
+  }
+
+  showTyping();
+  try {
+    normalizeProfileDraft();
+    const response = await fetch('/api/v1/profiles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileDraft)
+    });
+    if (!response.ok) throw new Error(await response.text());
+    removeTyping();
+    createGroup('ai', formatAIResponse('Profile saved. I updated My Data with your farm location, crops, harvest timing, current price, and alternatives.\n\n**Next step: open My Data and run analysis.**'), true);
+  } catch (err) {
+    removeTyping();
+    createGroup('ai', 'I could not save the profile. Check that the Docker backend and database are running, then try again.');
+  }
+  sendBtn.disabled = false;
+  userInput.focus();
+}
+
+function applyProfileValue(key, value) {
+  if (key === 'candidate_crops') {
+    profileDraft.candidate_crops = value.split(',').map(item => item.trim()).filter(Boolean);
+    return;
+  }
+  if (key === 'current_price_rm_per_kg' || key === 'farm_size_hectares') {
+    const parsed = Number(value.replace(/[^0-9.]/g, ''));
+    if (!Number.isNaN(parsed)) profileDraft[key] = parsed;
+    return;
+  }
+  if (key === 'expected_harvest_date') {
+    const days = Number((value.match(/\d+/) || [])[0]);
+    if (/day|days|week|weeks/i.test(value) && days) {
+      profileDraft.expected_harvest_days = /week|weeks/i.test(value) ? days * 7 : days;
+      return;
+    }
+    profileDraft.expected_harvest_date = value;
+    profileDraft.expected_harvest_days = daysUntil(value) || profileDraft.expected_harvest_days || 30;
+    return;
+  }
+  profileDraft[key] = value;
+}
+
+function normalizeProfileDraft() {
+  const current = profileDraft.current_crop || profileDraft.preferred_crops?.[0] || 'chili';
+  profileDraft.current_crop = current;
+  profileDraft.preferred_crops = [current];
+  profileDraft.location = profileDraft.location || 'Malaysia';
+  profileDraft.expected_harvest_days = profileDraft.expected_harvest_days || daysUntil(profileDraft.expected_harvest_date) || 30;
+  profileDraft.labor_flexibility_pct = profileDraft.labor_flexibility_pct || 25;
+}
+
+function daysUntil(value) {
+  if (!value) return null;
+  const target = new Date(value);
+  if (Number.isNaN(target.getTime())) return null;
+  return Math.max(1, Math.ceil((target - new Date()) / 86400000));
+}
+
+restoreChat();
+startProfileMode();
 </script>
 </body>
 </html>

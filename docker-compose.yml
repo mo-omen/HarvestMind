@@ -1,0 +1,164 @@
+name: harvestmind
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-harvestmind}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-harvestmind}
+      POSTGRES_DB: ${POSTGRES_DB:-harvestmind}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-harvestmind} -d ${POSTGRES_DB:-harvestmind}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+    environment:
+      APP_NAME: ${APP_NAME:-HarvestMind API}
+      APP_ENV: ${APP_ENV:-development}
+      APP_PORT: 8000
+      CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:3000","http://127.0.0.1:3000"]}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://harvestmind:harvestmind@db:5432/harvestmind}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      ILMU_API_KEY: ${ILMU_API_KEY:-}
+      ILMU_BASE_URL: ${ILMU_BASE_URL:-https://api.ilmu.ai/v1}
+      ILMU_MODEL: ${ILMU_MODEL:-ilmu-glm-5.1}
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+      FIRECRAWL_API_URL: ${FIRECRAWL_API_URL:-http://firecrawl-api:3002/v1}
+      DEMO_FARMER_ID: ${DEMO_FARMER_ID:-demo-farmer}
+      FAMA_PRICE_URLS: ${FAMA_PRICE_URLS:-["https://www.fama.gov.my/web/pub/harga-pasaran-terkini","https://www.fama.gov.my/harga-pasaran-terkini"]}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      firecrawl-api:
+        condition: service_started
+
+  worker:
+    build:
+      context: ./api
+    command: ["celery", "-A", "app.workers.celery_app:celery_app", "worker", "--loglevel=info"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://harvestmind:harvestmind@db:5432/harvestmind}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      ILMU_API_KEY: ${ILMU_API_KEY:-}
+      ILMU_BASE_URL: ${ILMU_BASE_URL:-https://api.ilmu.ai/v1}
+      ILMU_MODEL: ${ILMU_MODEL:-ilmu-glm-5.1}
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+      FIRECRAWL_API_URL: ${FIRECRAWL_API_URL:-http://firecrawl-api:3002/v1}
+      FAMA_PRICE_URLS: ${FAMA_PRICE_URLS:-["https://www.fama.gov.my/web/pub/harga-pasaran-terkini","https://www.fama.gov.my/harga-pasaran-terkini"]}
+    depends_on:
+      api:
+        condition: service_started
+
+  scheduler:
+    build:
+      context: ./api
+    command: ["celery", "-A", "app.workers.celery_app:celery_app", "beat", "--loglevel=info"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://harvestmind:harvestmind@db:5432/harvestmind}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      ILMU_API_KEY: ${ILMU_API_KEY:-}
+      ILMU_BASE_URL: ${ILMU_BASE_URL:-https://api.ilmu.ai/v1}
+      ILMU_MODEL: ${ILMU_MODEL:-ilmu-glm-5.1}
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+      FIRECRAWL_API_URL: ${FIRECRAWL_API_URL:-http://firecrawl-api:3002/v1}
+      FAMA_PRICE_URLS: ${FAMA_PRICE_URLS:-["https://www.fama.gov.my/web/pub/harga-pasaran-terkini","https://www.fama.gov.my/harga-pasaran-terkini"]}
+    depends_on:
+      api:
+        condition: service_started
+
+  frontend:
+    build:
+      context: .
+    environment:
+      PORT: 3000
+      BACKEND_URL: http://api:8000
+      API_KEY: ${ILMU_API_KEY:-}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_started
+
+  # --- Firecrawl Services ---
+  firecrawl-api:
+    build:
+      context: ./firecrawl-local/apps/api
+    environment:
+      REDIS_URL: redis://firecrawl-redis:6379
+      REDIS_RATE_LIMIT_URL: redis://firecrawl-redis:6379
+      PLAYWRIGHT_MICROSERVICE_URL: http://firecrawl-playwright:3000/scrape
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: firecrawl-postgres
+      POSTGRES_PORT: 5432
+      USE_DB_AUTHENTICATION: "false"
+      NUM_WORKERS_PER_QUEUE: 8
+      HOST: "0.0.0.0"
+      PORT: 3002
+      NUQ_RABBITMQ_URL: amqp://firecrawl-rabbitmq:5672
+      ENV: local
+    ports:
+      - "3002:3002"
+    command: node dist/src/harness.js --start-docker
+    depends_on:
+      firecrawl-redis:
+        condition: service_started
+      firecrawl-playwright:
+        condition: service_started
+      firecrawl-rabbitmq:
+        condition: service_healthy
+
+  firecrawl-playwright:
+    build:
+      context: ./firecrawl-local/apps/playwright-service-ts
+    environment:
+      PORT: 3000
+    tmpfs:
+      - /tmp/.cache:noexec,nosuid,size=1g
+
+  firecrawl-redis:
+    image: redis:alpine
+    command: redis-server --bind 0.0.0.0
+
+  firecrawl-rabbitmq:
+    image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  firecrawl-postgres:
+    build:
+      context: ./firecrawl-local/apps/nuq-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+
+volumes:
+  postgres_data:
