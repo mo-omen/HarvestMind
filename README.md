@@ -85,8 +85,8 @@ docker compose up --build --remove-orphans
 
 - `api/`: The heart of the platform. FastAPI service, repositories, and domain logic.
 - `firecrawl-local/`: Dedicated self-hosted scraper instance for real-time web intelligence.
+- `public/`: Pure, high-performance frontend pages (HTML/CSS).
 - `server.js`: Lightweight Node.js server for UI delivery and secure API proxying.
-- `*.html`: Pure, high-performance frontend pages.
 
 ---
 
