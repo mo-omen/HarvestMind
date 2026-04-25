@@ -8,10 +8,10 @@ const dns = require('dns');
 // This prevents the AggregateError [ETIMEDOUT] and ENETUNREACH when connecting to external APIs
 dns.setDefaultResultOrder('ipv4first');
 
-const API_KEY = process.env.API_KEY || process.env.ILMU_API_KEY || '';
+const API_KEY = process.env.API_KEY || 'your_api_key_here_>:D';
 
 // Fail fast if API_KEY is missing or default
-if (!API_KEY) {
+if (!API_KEY || API_KEY === 'your_api_key_here_>:D') {
   console.error("CRITICAL: API_KEY environment variable is missing. The application cannot function without an ILMU API key.");
   process.exit(1);
 }
@@ -20,12 +20,6 @@ const PORT = process.env.PORT || 3000;
 const BACKEND_URL = process.env.BACKEND_URL || 'http://api:8000';
 const FIRECRAWL_URL = process.env.FIRECRAWL_API_URL || 'http://firecrawl-api:3002/v1';
 const ILMU_BASE_URL = process.env.ILMU_BASE_URL || 'https://api.ilmu.ai/v1';
-const ILMU_MODEL = process.env.ILMU_MODEL || 'ilmu-glm-5.1';
-const LLM_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS || 30000);
-const SEARCH_TIMEOUT_MS = Number(process.env.SEARCH_TIMEOUT_MS || 8000);
-const LLM_MAX_RETRIES = Number(process.env.LLM_MAX_RETRIES || 1);
-const MAX_TOOL_DEPTH = Number(process.env.MAX_TOOL_DEPTH || 1);
-const WEB_SEARCH_ENABLED = process.env.ENABLE_WEB_SEARCH !== 'false';
 
 // Persistent agent for faster subsequent requests to the LLM API
 const zaiAgent = new https.Agent({ keepAlive: true, maxSockets: 10, family: 4 });
@@ -140,31 +134,25 @@ const server = http.createServer((req, res) => {
 });
 
 async function runChatCompletion(messages, depth = 0) {
-  if (!Array.isArray(messages) || !messages.length) {
-    const err = new Error('Request must include at least one chat message.');
-    err.statusCode = 400;
-    throw err;
-  }
-
-  const allowTools = WEB_SEARCH_ENABLED && depth < MAX_TOOL_DEPTH && shouldUseWebSearch(messages);
   const payload = {
-    model: ILMU_MODEL,
+    model: 'ilmu-glm-5.1',
     max_tokens: 800,
     temperature: 0.2,
-    messages: messages
+    messages: messages,
+    tools: TOOLS
   };
 
-  if (allowTools) {
-    payload.tools = TOOLS;
-  } else {
+  // If we've reached the max depth, force a final text response and hope it complies
+  if (depth >= 3) {
     payload.tool_choice = 'none';
   }
 
-  let response = await callLLMWithRetry(payload);
+  let response = await callLLM(payload);
   let choice = response.choices?.[0];
 
   if (choice?.finish_reason === 'tool_calls' || choice?.message?.tool_calls) {
-    if (depth >= MAX_TOOL_DEPTH) {
+    // If it's a tool call but we are at max depth, we must stop to prevent infinite loops
+    if (depth >= 3) {
       return response;
     }
 
@@ -173,12 +161,7 @@ async function runChatCompletion(messages, depth = 0) {
 
     for (const toolCall of toolCalls) {
       if (toolCall.function.name === 'web_search') {
-        let args = {};
-        try {
-          args = JSON.parse(toolCall.function.arguments || '{}');
-        } catch (err) {
-          console.warn('Invalid web_search arguments:', err.message);
-        }
+        const args = JSON.parse(toolCall.function.arguments);
         console.log(`Executing web_search: ${args.query} in ${args.location || 'Malaysia'}`);
         const searchResults = await executeWebSearch(args.query, args.location);
 
@@ -207,38 +190,10 @@ async function runChatCompletion(messages, depth = 0) {
   return response;
 }
 
-function shouldUseWebSearch(messages) {
-  const lastUserMessage = [...messages].reverse().find(message => message.role === 'user');
-  const content = String(lastUserMessage?.content || '').toLowerCase();
-  return /\b(today|current|latest|recent|now|live|weather|rain|flood|drought|price|market|news|trend|forecast)\b/.test(content);
-}
-
-async function callLLMWithRetry(payload) {
-  let lastError;
-
-  for (let attempt = 0; attempt <= LLM_MAX_RETRIES; attempt += 1) {
-    try {
-      return await callLLM(payload, LLM_TIMEOUT_MS);
-    } catch (err) {
-      lastError = err;
-      const retryable = isRetryableLLMError(err) && err.code !== 'REQUEST_TIMEOUT';
-      if (!retryable || attempt >= LLM_MAX_RETRIES) break;
-      await delay(400 * (attempt + 1));
-    }
-  }
-
-  throw lastError;
-}
-
-function isRetryableLLMError(err) {
-  if ([408, 429, 500, 502, 503, 504].includes(err.statusCode)) return true;
-  return ['ECONNRESET', 'EAI_AGAIN', 'ETIMEDOUT', 'ENOTFOUND'].includes(err.code);
-}
-
-function callLLM(payload, timeoutMs) {
+function callLLM(payload) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
-    const targetUrl = new URL(`${stripTrailingSlash(ILMU_BASE_URL)}/chat/completions`);
+    const targetUrl = new URL(`${ILMU_BASE_URL.rstrip('/')}/chat/completions`);
     const options = {
       hostname: targetUrl.hostname,
       port: targetUrl.port || (targetUrl.protocol === 'https:' ? 443 : 80),
@@ -257,50 +212,29 @@ function callLLM(payload, timeoutMs) {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
-        let parsed;
         try {
-          parsed = JSON.parse(data);
+          resolve(JSON.parse(data));
         } catch (e) {
           reject(new Error(`Failed to parse LLM response: ${data.substring(0, 100)}`));
-          return;
         }
-
-        if (res.statusCode < 200 || res.statusCode >= 300) {
-          const message = parsed.error?.message || parsed.error || parsed.message || `LLM returned HTTP ${res.statusCode}`;
-          const err = new Error(message);
-          err.statusCode = res.statusCode;
-          reject(err);
-          return;
-        }
-
-        resolve(parsed);
       });
     });
 
     req.on('error', reject);
-    req.setTimeout(timeoutMs, () => {
-      const err = new Error(`LLM request timed out after ${Math.round(timeoutMs / 1000)}s`);
-      err.code = 'REQUEST_TIMEOUT';
-      req.destroy(err);
-    });
     req.write(body);
     req.end();
   });
 }
 
 async function executeWebSearch(query, location) {
-  if (!query) {
-    return { error: 'Search query was empty.' };
-  }
-
   const fullQuery = location ? `${query} in ${location} Malaysia` : `${query} Malaysia`;
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const body = JSON.stringify({ query: fullQuery, limit: 3 });
-    const url = new URL(`${stripTrailingSlash(FIRECRAWL_URL)}/search`);
+    const url = new URL(`${FIRECRAWL_URL.rstrip('/')}/search`);
 
     const options = {
       hostname: url.hostname,
-      port: url.port || (url.protocol === 'https:' ? 443 : 80),
+      port: url.port,
       path: url.pathname,
       method: 'POST',
       headers: {
@@ -314,11 +248,6 @@ async function executeWebSearch(query, location) {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
-        if (res.statusCode < 200 || res.statusCode >= 300) {
-          resolve({ error: `Search service returned HTTP ${res.statusCode}` });
-          return;
-        }
-
         try {
           resolve(JSON.parse(data));
         } catch (e) {
@@ -331,22 +260,16 @@ async function executeWebSearch(query, location) {
       console.error('Search Request Error:', err);
       resolve({ error: `Search service unavailable: ${err.message}` });
     });
-    req.setTimeout(SEARCH_TIMEOUT_MS, () => {
-      const err = new Error(`Search request timed out after ${Math.round(SEARCH_TIMEOUT_MS / 1000)}s`);
-      req.destroy(err);
-    });
     req.write(body);
     req.end();
   });
 }
 
-function stripTrailingSlash(value) {
-  return String(value).replace(/\/+$/, '');
-}
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// Helper to strip trailing slash
+String.prototype.rstrip = function(char) {
+  if (this.endsWith(char)) return this.substring(0, this.length - 1);
+  return this;
+};
 
 function proxyToBackend(req, res) {
   const target = new URL(req.url, BACKEND_URL);
