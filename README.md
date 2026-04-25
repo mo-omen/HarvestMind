@@ -12,6 +12,7 @@
 **HarvestMind** is a decision intelligence platform designed to empower Malaysian farmers. By grounding advanced AI (ILMU GLM) in real-time market prices, weather forecasts, and news signals, HarvestMind helps farmers answer the critical question: **Should I persevere, pivot, or harvest early?**
 
 NOTE: You can view Demo video [here](https://youtu.be/xF5qp4EL0WA?si=Zowxb9eKPryKcYYI).
+
 NOTE: If you want, you can try a lite version of it on [here](https://sparklab-0yw7.onrender.com).
 
 ## ✨ Key Features
