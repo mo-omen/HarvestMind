@@ -43,7 +43,9 @@ async def get_signal_history(farmer_id: str, limit: int = 25) -> SignalHistoryRe
     )
 
 
+import dataclasses
+
 def _to_signal_item(record) -> SignalSnapshotItem | None:
     if record is None:
         return None
-    return SignalSnapshotItem.model_validate(record.__dict__)
+    return SignalSnapshotItem.model_validate(dataclasses.asdict(record))
