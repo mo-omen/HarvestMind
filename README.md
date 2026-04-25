@@ -61,7 +61,7 @@ Choose your preferred way to start the ecosystem:
 cp .env.example .env
 
 # Start stack manually
-docker compose up --build 
+docker compose up -d --build 
 ```
 
 ### 3. Access
