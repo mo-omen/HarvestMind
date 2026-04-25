@@ -84,8 +84,8 @@ const server = http.createServer((req, res) => {
   // ── Serve static files ──
   const requestPath = req.url.split('?')[0];
   let filePath = requestPath === '/' ? '/index.html' : requestPath;
-  filePath = path.resolve(__dirname, `.${path.normalize(filePath)}`);
-  if (!filePath.startsWith(__dirname)) {
+  filePath = path.resolve(__dirname, 'public', `.${path.normalize(filePath)}`);
+  if (!filePath.startsWith(path.join(__dirname, 'public'))) {
     res.writeHead(403);
     res.end('Forbidden');
     return;

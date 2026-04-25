@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json ./
 COPY server.js ./
-COPY index.html overview.html crops.html markets.html mydata.html ./
+COPY public/ ./public/
 
 ENV PORT=3000
 EXPOSE 3000
