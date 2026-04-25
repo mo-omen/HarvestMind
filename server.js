@@ -136,7 +136,7 @@ const server = http.createServer((req, res) => {
 async function runChatCompletion(messages, depth = 0) {
   const payload = {
     model: 'ilmu-glm-5.1',
-    max_tokens: 800,
+    max_tokens: 1000,
     temperature: 0.2,
     messages: messages,
     tools: TOOLS
