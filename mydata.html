@@ -54,6 +54,12 @@
   .freshness { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
   .pill { font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 9px; border: 1px solid var(--border); color: var(--ink-soft); }
   .pill.stale { border-color: #a08030; color: #a08030; }
+
+  /* Progress Logs */
+  .progress-log { font-size: 0.75rem; color: var(--accent); margin-top: 10px; padding: 10px; border-left: 2px solid var(--accent-light); background: var(--white); display: none; }
+  .progress-log.active { display: block; animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+
   @media (max-width: 760px) {
     header { padding: 10px 14px; }
     .header-nav { display: none; }
@@ -122,6 +128,7 @@
       <div id="recommendation-box">
         <p class="muted">Loading recommendation...</p>
       </div>
+      <div class="progress-log" id="analysis-log">Initializing analysis...</div>
       <div class="freshness" id="freshness"></div>
     </section>
   </div>
@@ -194,8 +201,12 @@
       return;
     }
     const btn = document.getElementById('rerun-btn');
+    const log = document.getElementById('analysis-log');
     btn.disabled = true;
     btn.textContent = 'Running...';
+    log.classList.add('active');
+    log.textContent = 'Contacting analyzer...';
+
     try {
       const harvestDays = currentProfile.expected_harvest_days || daysUntil(currentProfile.expected_harvest_date) || 30;
       const response = await fetch('/api/v1/analysis/decision', {
@@ -214,14 +225,40 @@
           news_signals: []
         })
       });
+
       if (!response.ok) throw new Error(await response.text());
-      await loadRecommendation();
-      await loadFreshness();
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.substring(6));
+            if (data.status) {
+              log.textContent = data.status;
+            } else if (data.result) {
+              log.textContent = 'Analysis complete.';
+              await loadRecommendation();
+              await loadFreshness();
+            } else if (data.error) {
+              throw new Error(data.error);
+            }
+          }
+        }
+      }
     } catch (err) {
-      alert('Analysis failed. Check backend, database, and ILMU_API_KEY.');
+      alert('Analysis failed: ' + err.message);
     } finally {
       btn.disabled = false;
       btn.textContent = 'Run analysis';
+      setTimeout(() => log.classList.remove('active'), 2000);
     }
   }
 

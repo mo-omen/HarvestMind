@@ -1,5 +1,7 @@
 import asyncio
+from collections.abc import Callable, Coroutine
 from datetime import date, timedelta
+from typing import Any, Optional
 
 from app.clients.glm import GLMClientError, GLMDecisionClient
 from app.clients.news import CompositeNewsClient, FirecrawlNewsClient, GDELTNewsClient, NewsClientError, NewsSearchRequest, NewsSearchResponse
@@ -49,13 +51,24 @@ class DecisionOrchestrator:
         )
         self.glm_client = glm_client or GLMDecisionClient()
 
-    async def run(self, payload: DecisionAnalysisRequest) -> DecisionAnalysisResponse:
-        weather_result, news_result, price_data = await asyncio.gather(
+    async def run(
+        self,
+        payload: DecisionAnalysisRequest,
+        status_callback: Optional[Callable[[str], Coroutine[Any, Any, None]]] = None
+    ) -> DecisionAnalysisResponse:
+        if status_callback: await status_callback("Gathering real-time intelligence...")
+
+        # Parallel fetch for speed
+        tasks = [
             self._fetch_weather(payload.location),
             self._fetch_news(payload),
             self._fetch_prices(payload),
-        )
+        ]
 
+        if status_callback: await status_callback("Analyzing local weather and market prices...")
+        weather_result, news_result, price_data = await asyncio.gather(*tasks)
+
+        if status_callback: await status_callback("Evaluating regional agricultural signals...")
         weather_snapshot = self._weather_snapshot_from_report(weather_result)
         news_signals = self._news_signals_from_response(news_result)
         price_snapshot = self._price_snapshot_from_data(price_data)
@@ -73,6 +86,8 @@ class DecisionOrchestrator:
             expected_harvest_days=payload.expected_harvest_days,
         )
         news_message, news_score = analyze_news_signal(news_signals)
+
+        if status_callback: await status_callback("Comparing planting scenarios and risks...")
         scenario_comparison = build_scenario_comparison(
             payload,
             price_outlook=price_outlook,
@@ -102,6 +117,7 @@ class DecisionOrchestrator:
             scenario_comparison=scenario_comparison,
         )
 
+        if status_callback: await status_callback("Synthesizing final AI recommendation...")
         glm_response = await self.glm_client.analyze(payload, evidence)
         return glm_response.model_copy(update={"evidence": evidence})
 

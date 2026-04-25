@@ -1,4 +1,4 @@
-# 🌾 HarvestMind (AgriPivot)
+# 🌾 HarvestMind
 ### *Data-Driven Decisions for the Modern Malaysian Farmer*
 
 [![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -14,9 +14,9 @@
 ## ✨ Key Features
 
 - **💬 Conversational Farm Intake**: No complex forms. Just talk to the AI about your farm's location, crops, and current stage.
-- **📈 Live Market Monitoring**: Real-time pricing data for critical Malaysian crops (Chili, Ginger, Durian, etc.) via FAMA and local scraping.
-- **⚡ Decision Orchestrator**: High-fidelity reasoning that weighs weather risks (Open-Meteo) and news events (GDELT + Firecrawl) against farm profiles.
-- **🔍 Web Intelligence Fallback**: Integrated with a **local Firecrawl instance** to search the web for the latest agricultural signals when APIs fall short.
+- **🔍 Web-Powered Discussions**: The free chat uses a local **Firecrawl** instance to search the live web for real-time agricultural trends during your discussions.
+- **📈 Live Market Monitoring**: Real-time pricing and trend analysis for **6+ critical Malaysian crops** via FAMA and web-scraping fallbacks.
+- **⚡ Decision Orchestrator**: High-fidelity reasoning with **real-time progress logs** (SSE) that weigh weather risks and news events against farm profiles.
 - **📅 Automated Signal Cards**: Weekly generated risk and opportunity cards for the Malaysian agricultural landscape.
 
 ---
@@ -68,16 +68,7 @@ docker compose up --build --remove-orphans
 ---
 
 ## 🛠️ Tech Stack
-...
-## 🩺 Troubleshooting
-If you encounter `port is already allocated` errors (common when renaming folders or changing services), run:
-```bash
-docker compose down --remove-orphans
-```
-Or use our built-in doctor:
-```bash
-./doctor.sh
-```
+
 | Layer | Technology |
 | :--- | :--- |
 | **Frontend** | Vanilla JS, HTML5, CSS3 (Modern Responsive UI) |
@@ -96,6 +87,14 @@ Or use our built-in doctor:
 - `firecrawl-local/`: Dedicated self-hosted scraper instance for real-time web intelligence.
 - `server.js`: Lightweight Node.js server for UI delivery and secure API proxying.
 - `*.html`: Pure, high-performance frontend pages.
+
+---
+
+## 🩺 Troubleshooting
+
+```bash
+./doctor.sh
+```
 
 ---
 
